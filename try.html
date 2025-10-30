@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Share Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
+        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <div class="flex items-center justify-center gap-3 mb-4">
+                <i data-lucide="calculator" class="h-8 w-8 text-blue-600"></i>
+                <h1 class="text-4xl font-bold text-slate-900">Investment Share Calculator</h1>
+            </div>
+            <p class="text-slate-600 max-w-2xl mx-auto">
+                Calculate each participant's share based on their investment amounts in Indian Rupees.
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Input Section -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Participants & Investments</h2>
+                
+                <div id="participants-container" class="space-y-4 mb-4">
+                    <!-- Participants will be added here -->
+                </div>
+                
+                <button onclick="addParticipant()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg mb-4">
+                    Add Participant
+                </button>
+                
+                <div class="mb-4">
+                    <label class="block text-lg font-medium mb-2">Total Return Amount (₹)</label>
+                    <input type="text" id="total-return" placeholder="Enter total return" 
+                           class="w-full px-3 py-2 border rounded-lg" oninput="formatNumber(this)">
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="calculateShares()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg">
+                        Calculate Shares
+                    </button>
+                    <button onclick="loadExample()" class="bg-gray-600 text-white px-4 py-2 rounded-lg">
+                        Example
+                    </button>
+                    <button onclick="resetCalculator()" class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="bg-white rounded-lg card-shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Share Distribution</h2>
+                <div id="results-container">
+                    <div class="text-center py-12 text-slate-500">
+                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50"></i>
+                        <p>Enter participant details and return amount to calculate shares</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let participants = [
+            { id: '1', name: '', investment: 0, share: 0, percentage: 0 }
+        ];
+        let calculated = false;
+
+        function formatNumber(input) {
+            let value = input.value.replace(/[^\d.]/g, '');
+            let parts = value.split('.');
+            let integerPart = parts[0] || '0';
+            let decimalPart = parts[1] || '';
+            
+            if (integerPart.length > 3) {
+                let lastThree = integerPart.slice(-3);
+                let otherDigits = integerPart.slice(0, -3);
+                if (otherDigits.length > 0) {
+                    let formattedOther = otherDigits.replace(/\B(?=(\d{2})+(?!\d))/g, ',');
+                    integerPart = formattedOther + ',' + lastThree;
+                }
+            }
+            
+            input.value = decimalPart ? integerPart + '.' + decimalPart : integerPart;
+        }
+
+        function formatCurrency(amount) {
+            return '₹' + amount.toLocaleString('en-IN');
+        }
+
+        function parseNumber(str) {
+            return parseFloat(str.replace(/,/g, '')) || 0;
+        }
+
+        function addParticipant() {
+            participants.push({
+                id: Date.now().toString(),
+                name: '',
+                investment: 0,
+                share: 0,
+                percentage: 0
+            });
+            renderParticipants();
+        }
+
+        function removeParticipant(id) {
+            if (participants.length > 1) {
+                participants = participants.filter(p => p.id !== id);
+                renderParticipants();
+            } else {
+                alert('You must have at least one participant');
+            }
+        }
+
+        function updateParticipant(id, field, value) {
+            let participant = participants.find(p => p.id === id);
+            if (participant) {
+                if (field === 'name') {
+                    participant[field] = value;
+                } else if (field === 'investment') {
+                    participant[field] = parseNumber(value);
+                }
+            }
+        }
+
+        function renderParticipants() {
+            let container = document.getElementById('participants-container');
+            container.innerHTML = '';
+            
+            participants.forEach((participant, index) => {
+                let div = document.createElement('div');
+                div.className = 'border rounded-lg p-4 bg-gray-50';
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-medium">Participant ${index + 1}</h3>
+                        ${participants.length > 1 ? 
+                            `<button onclick="removeParticipant('${participant.id}')" class="text-red-600">Remove</button>` : 
+                            ''
+                        }
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <input type="text" placeholder="Name" value="${participant.name}" 
+                               onchange="updateParticipant('${participant.id}', 'name', this.value)"
+                               class="px-3 py-2 border rounded">
+                        <input type="text" placeholder="Investment (₹)" value="${participant.investment}" 
+                               onchange="updateParticipant('${participant.id}', 'investment', this.value)"
+                               oninput="formatNumber(this)"
+                               class="px-3 py-2 border rounded">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function calculateShares() {
+            let validParticipants = participants.filter(p => p.name && p.investment > 0);
+            
+            if (validParticipants.length === 0) {
+                alert('Please add at least one participant with name and investment');
+                return;
+            }
+
+            let totalReturn = parseNumber(document.getElementById('total-return').value);
+            if (isNaN(totalReturn) || totalReturn <= 0) {
+                alert('Please enter a valid return amount');
+                return;
+            }
+
+            let totalInvestment = validParticipants.reduce((sum, p) => sum + p.investment, 0);
+            
+            if (totalInvestment === 0) {
+                alert('Total investment cannot be zero');
+                return;
+            }
+
+            validParticipants.forEach(p => {
+                p.percentage = (p.investment / totalInvestment) * 100;
+                p.share = (totalReturn * p.investment) / totalInvestment;
+            });
+
+            calculated = true;
+            renderResults();
+        }
+
+        function loadExample() {
+            participants = [
+                { id: '1', name: 'Alice', investment: 500000, share: 0, percentage: 0 },
+                { id: '2', name: 'Bob', investment: 300000, share: 0, percentage: 0 },
+                { id: '3', name: 'Charlie', investment: 200000, share: 0, percentage: 0 }
+            ];
+            document.getElementById('total-return').value = '12,00,000';
+            renderParticipants();
+            alert('Example loaded: 3 participants with ₹10,00,000 total investment and ₹12,00,000 return');
+        }
+
+        function resetCalculator() {
+            participants = [{ id: '1', name: '', investment: 0, share: 0, percentage: 0 }];
+            document.getElementById('total-return').value = '';
+            calculated = false;
+            renderParticipants();
+            renderResults();
+        }
+
+        function renderResults() {
+            let container = document.getElementById('results-container');
+            let validParticipants = participants.filter(p => p.name && p.investment > 0);
+            
+            if (!calculated) {
+                container.innerHTML = `
+                    <div class="text-center py-12 text-slate-500">
+                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50"></i>
+                        <p>Enter participant details and return amount to calculate shares</p>
+                    </div>
+                `;
+            } else {
+                let totalInvestment = validParticipants.reduce((sum, p) => sum + p.investment, 0);
+                let totalReturn = parseNumber(document.getElementById('total-return').value);
+                let profit = totalReturn - totalInvestment;
+                
+                container.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="bg-blue-50 p-3 rounded">
+                                <p class="text-sm text-blue-600">Total Investment</p>
+                                <p class="font-bold text-blue-900">${formatCurrency(totalInvestment)}</p>
+                            </div>
+                            <div class="bg-green-50 p-3 rounded">
+                                <p class="text-sm text-green-600">Total Return</p>
+                                <p class="font-bold text-green-900">${formatCurrency(totalReturn)}</p>
+                            </div>
+                            <div class="${profit >= 0 ? 'bg-emerald-50' : 'bg-red-50'} p-3 rounded">
+                                <p class="text-sm ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}">${profit >= 0 ? 'Profit' : 'Loss'}</p>
+                                <p class="font-bold ${profit >= 0 ? 'text-emerald-900' : 'text-red-900'}">${formatCurrency(Math.abs(profit))}</p>
+                            </div>
+                        </div>
+                        
+                        <h3 class="font-semibold text-lg">Individual Shares</h3>
+                        ${validParticipants.map(p => `
+                            <div class="border rounded-lg p-4 bg-gray-50">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h4 class="font-medium">${p.name}</h4>
+                                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">${p.percentage.toFixed(2)}%</span>
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 text-sm">
+                                    <div>
+                                        <p class="text-gray-600">Investment</p>
+                                        <p class="font-semibold">${formatCurrency(p.investment)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-600">Share</p>
+                                        <p class="font-semibold text-green-600">${formatCurrency(p.share)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-gray-600">ROI</p>
+                                        <p class="font-semibold ${p.share >= p.investment ? 'text-green-600' : 'text-red-600'}">
+                                            ${((p.share - p.investment) / p.investment * 100).toFixed(1)}%
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${p.percentage}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderParticipants();
+            renderResults();
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
