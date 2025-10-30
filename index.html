@@ -7,17 +7,221 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .gradient-bg { background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); }
-        .card-shadow { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        .progress-bar { transition: width 0.5s ease-in-out; }
+        /* Light mode styles */
+        .gradient-bg-light { 
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); 
+        }
+        .card-shadow-light { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); 
+        }
+        .progress-bar-light { 
+            transition: width 0.5s ease-in-out; 
+        }
+        
+        /* Dark mode styles - AMOLED */
+        .gradient-bg-dark { 
+            background: #000000;
+            background: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #111111 100%);
+        }
+        .card-shadow-dark { 
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.1), 
+                        0 0 40px rgba(138, 43, 226, 0.05),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+        .progress-bar-dark { 
+            transition: width 0.5s ease-in-out;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+        }
+        
+        /* Custom animations */
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 255, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(0, 255, 255, 0.8), 0 0 30px rgba(138, 43, 226, 0.6); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .glow-effect {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        /* Dark mode specific styles */
+        .dark-mode {
+            color: #ffffff;
+        }
+        
+        .dark-mode .bg-white {
+            background-color: #0a0a0a !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dark-mode .bg-gray-50 {
+            background-color: #111111 !important;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .dark-mode .text-slate-900 {
+            color: #ffffff !important;
+        }
+        
+        .dark-mode .text-slate-600 {
+            color: #a0a0a0 !important;
+        }
+        
+        .dark-mode .text-slate-500 {
+            color: #808080 !important;
+        }
+        
+        .dark-mode .text-slate-700 {
+            color: #b0b0b0 !important;
+        }
+        
+        .dark-mode .border {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        .dark-mode input, .dark-mode button {
+            background-color: #1a1a1a !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .dark-mode input:focus, .dark-mode button:focus {
+            border-color: #00ffff !important;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        
+        .dark-mode .bg-blue-50 {
+            background-color: rgba(0, 100, 255, 0.1) !important;
+            border: 1px solid rgba(0, 100, 255, 0.3);
+        }
+        
+        .dark-mode .bg-green-50 {
+            background-color: rgba(0, 255, 0, 0.1) !important;
+            border: 1px solid rgba(0, 255, 0, 0.3);
+        }
+        
+        .dark-mode .bg-emerald-50 {
+            background-color: rgba(0, 255, 100, 0.1) !important;
+            border: 1px solid rgba(0, 255, 100, 0.3);
+        }
+        
+        .dark-mode .bg-red-50 {
+            background-color: rgba(255, 0, 0, 0.1) !important;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+        }
+        
+        .dark-mode .text-blue-600 {
+            color: #00b4d8 !important;
+        }
+        
+        .dark-mode .text-blue-900 {
+            color: #0096c7 !important;
+        }
+        
+        .dark-mode .text-green-600 {
+            color: #00ff88 !important;
+        }
+        
+        .dark-mode .text-green-900 {
+            color: #00cc6a !important;
+        }
+        
+        .dark-mode .text-emerald-600 {
+            color: #00ffaa !important;
+        }
+        
+        .dark-mode .text-emerald-900 {
+            color: #00cc88 !important;
+        }
+        
+        .dark-mode .text-red-600 {
+            color: #ff6b6b !important;
+        }
+        
+        .dark-mode .text-red-900 {
+            color: #ff5252 !important;
+        }
+        
+        /* Dark mode toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .theme-toggle.dark {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+            border: 2px solid rgba(0, 255, 255, 0.5);
+        }
+        
+        /* Scrollbar styling for dark mode */
+        .dark-mode ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .dark-mode ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+        
+        .dark-mode ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            border-radius: 4px;
+        }
+        
+        .dark-mode ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00cccc, #ff00ff);
+        }
     </style>
 </head>
-<body class="gradient-bg min-h-screen p-4">
+<body class="gradient-bg-light min-h-screen p-4 transition-all duration-300">
+    <!-- Theme Toggle Button -->
+    <div class="theme-toggle" onclick="toggleTheme()" id="theme-toggle">
+        <i data-lucide="sun" class="h-6 w-6 text-white" id="theme-icon"></i>
+    </div>
+
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8">
             <div class="flex items-center justify-center gap-3 mb-4">
-                <i data-lucide="calculator" class="h-8 w-8 text-blue-600"></i>
+                <i data-lucide="calculator" class="h-8 w-8 text-blue-600 float-animation"></i>
                 <h1 class="text-4xl font-bold text-slate-900">Investment Share Calculator</h1>
             </div>
             <p class="text-slate-600 max-w-2xl mx-auto">
@@ -27,42 +231,42 @@
 
         <div class="grid lg:grid-cols-2 gap-8">
             <!-- Input Section -->
-            <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="bg-white rounded-lg card-shadow-light p-6 hover:scale-105 transition-transform duration-300">
                 <h2 class="text-xl font-semibold mb-4">Participants & Investments</h2>
                 
                 <div id="participants-container" class="space-y-4 mb-4">
                     <!-- Participants will be added here -->
                 </div>
                 
-                <button onclick="addParticipant()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg mb-4">
+                <button onclick="addParticipant()" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg mb-4 hover:bg-blue-700 transform hover:scale-105 transition-all duration-200">
                     Add Participant
                 </button>
                 
                 <div class="mb-4">
                     <label class="block text-lg font-medium mb-2">Total Return Amount (₹)</label>
-                    <input type="text" id="total-return" placeholder="Enter total return" 
+                    <input type="text" id="total-return" placeholder="Enter total return amount" 
                            class="w-full px-3 py-2 border rounded-lg" oninput="formatNumber(this)">
                 </div>
                 
                 <div class="flex gap-3">
-                    <button onclick="calculateShares()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg">
+                    <button onclick="calculateShares()" class="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transform hover:scale-105 transition-all duration-200">
                         Calculate Shares
                     </button>
-                    <button onclick="loadExample()" class="bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    <button onclick="loadExample()" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transform hover:scale-105 transition-all duration-200">
                         Example
                     </button>
-                    <button onclick="resetCalculator()" class="bg-red-600 text-white px-4 py-2 rounded-lg">
+                    <button onclick="resetCalculator()" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transform hover:scale-105 transition-all duration-200">
                         Reset
                     </button>
                 </div>
             </div>
 
             <!-- Results Section -->
-            <div class="bg-white rounded-lg card-shadow p-6">
+            <div class="bg-white rounded-lg card-shadow-light p-6 hover:scale-105 transition-transform duration-300">
                 <h2 class="text-xl font-semibold mb-4">Share Distribution</h2>
                 <div id="results-container">
                     <div class="text-center py-12 text-slate-500">
-                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50"></i>
+                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50 pulse-animation"></i>
                         <p>Enter participant details and return amount to calculate shares</p>
                     </div>
                 </div>
@@ -75,6 +279,59 @@
             { id: '1', name: '', investment: 0, share: 0, percentage: 0 }
         ];
         let calculated = false;
+        let isDarkMode = false;
+
+        // Theme toggle function
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (isDarkMode) {
+                body.classList.add('dark-mode');
+                body.classList.remove('gradient-bg-light');
+                body.classList.add('gradient-bg-dark');
+                themeToggle.classList.add('dark');
+                
+                // Update all cards
+                document.querySelectorAll('.card-shadow-light').forEach(el => {
+                    el.classList.remove('card-shadow-light');
+                    el.classList.add('card-shadow-dark');
+                });
+                
+                // Update icon to moon
+                themeIcon.setAttribute('data-lucide', 'moon');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.remove('gradient-bg-dark');
+                body.classList.add('gradient-bg-light');
+                themeToggle.classList.remove('dark');
+                
+                // Update all cards
+                document.querySelectorAll('.card-shadow-dark').forEach(el => {
+                    el.classList.remove('card-shadow-dark');
+                    el.classList.add('card-shadow-light');
+                });
+                
+                // Update icon to sun
+                themeIcon.setAttribute('data-lucide', 'sun');
+            }
+            
+            // Re-initialize Lucide icons
+            lucide.createIcons();
+            
+            // Save preference
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+
+        // Load theme preference
+        function loadThemePreference() {
+            const savedTheme = localStorage.getItem('darkMode');
+            if (savedTheme === 'true') {
+                toggleTheme();
+            }
+        }
 
         function formatNumber(input) {
             let value = input.value.replace(/[^\d.]/g, '');
@@ -111,6 +368,17 @@
                 percentage: 0
             });
             renderParticipants();
+            
+            // Add animation effect
+            setTimeout(() => {
+                const newParticipant = document.querySelector('#participants-container > div:last-child');
+                if (newParticipant) {
+                    newParticipant.classList.add('glow-effect');
+                    setTimeout(() => {
+                        newParticipant.classList.remove('glow-effect');
+                    }, 2000);
+                }
+            }, 100);
         }
 
         function removeParticipant(id) {
@@ -118,7 +386,7 @@
                 participants = participants.filter(p => p.id !== id);
                 renderParticipants();
             } else {
-                alert('You must have at least one participant');
+                showNotification('You must have at least one participant', 'error');
             }
         }
 
@@ -139,23 +407,23 @@
             
             participants.forEach((participant, index) => {
                 let div = document.createElement('div');
-                div.className = 'border rounded-lg p-4 bg-gray-50';
+                div.className = 'border rounded-lg p-4 bg-gray-50 transform transition-all duration-300 hover:scale-102';
                 div.innerHTML = `
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="font-medium">Participant ${index + 1}</h3>
                         ${participants.length > 1 ? 
-                            `<button onclick="removeParticipant('${participant.id}')" class="text-red-600">Remove</button>` : 
+                            `<button onclick="removeParticipant('${participant.id}')" class="text-red-600 hover:text-red-800 transition-colors duration-200">Remove</button>` : 
                             ''
                         }
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="text" placeholder="Name" value="${participant.name}" 
                                onchange="updateParticipant('${participant.id}', 'name', this.value)"
-                               class="px-3 py-2 border rounded">
-                        <input type="text" placeholder="Investment (₹)" value="${participant.investment > 0 ? participant.investment : ''}" 
+                               class="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 transition-all duration-200">
+                        <input type="text" placeholder="Enter investment amount" value="${participant.investment > 0 ? participant.investment : ''}" 
                                onchange="updateParticipant('${participant.id}', 'investment', this.value)"
                                oninput="formatNumber(this)"
-                               class="px-3 py-2 border rounded">
+                               class="px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 transition-all duration-200">
                     </div>
                 `;
                 container.appendChild(div);
@@ -166,20 +434,20 @@
             let validParticipants = participants.filter(p => p.name && p.investment > 0);
             
             if (validParticipants.length === 0) {
-                alert('Please add at least one participant with name and investment');
+                showNotification('Please add at least one participant with name and investment', 'error');
                 return;
             }
 
             let totalReturn = parseNumber(document.getElementById('total-return').value);
             if (isNaN(totalReturn) || totalReturn <= 0) {
-                alert('Please enter a valid return amount');
+                showNotification('Please enter a valid return amount', 'error');
                 return;
             }
 
             let totalInvestment = validParticipants.reduce((sum, p) => sum + p.investment, 0);
             
             if (totalInvestment === 0) {
-                alert('Total investment cannot be zero');
+                showNotification('Total investment cannot be zero', 'error');
                 return;
             }
 
@@ -190,6 +458,7 @@
 
             calculated = true;
             renderResults();
+            showNotification('Shares calculated successfully!', 'success');
         }
 
         function loadExample() {
@@ -200,7 +469,7 @@
             ];
             document.getElementById('total-return').value = '12,00,000';
             renderParticipants();
-            alert('Example loaded: 3 participants with ₹10,00,000 total investment and ₹12,00,000 return');
+            showNotification('Example loaded: 3 participants with ₹10,00,000 total investment and ₹12,00,000 return', 'info');
         }
 
         function resetCalculator() {
@@ -209,6 +478,40 @@
             calculated = false;
             renderParticipants();
             renderResults();
+            showNotification('Calculator reset successfully', 'info');
+        }
+
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-20 right-4 px-6 py-3 rounded-lg text-white font-medium z-50 transform translate-x-full transition-transform duration-300`;
+            
+            // Set color based on type
+            const colors = {
+                success: 'bg-green-600',
+                error: 'bg-red-600',
+                info: 'bg-blue-600'
+            };
+            
+            notification.classList.add(colors[type] || colors.info);
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+                notification.classList.add('translate-x-0');
+            }, 100);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.classList.remove('translate-x-0');
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
         }
 
         function renderResults() {
@@ -218,7 +521,7 @@
             if (!calculated) {
                 container.innerHTML = `
                     <div class="text-center py-12 text-slate-500">
-                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50"></i>
+                        <i data-lucide="calculator" class="h-12 w-12 mx-auto mb-4 opacity-50 pulse-animation"></i>
                         <p>Enter participant details and return amount to calculate shares</p>
                     </div>
                 `;
@@ -230,23 +533,23 @@
                 container.innerHTML = `
                     <div class="space-y-4">
                         <div class="grid grid-cols-3 gap-3">
-                            <div class="bg-blue-50 p-3 rounded">
+                            <div class="bg-blue-50 p-3 rounded-lg transform hover:scale-105 transition-all duration-200">
                                 <p class="text-sm text-blue-600">Total Investment</p>
                                 <p class="font-bold text-blue-900">${formatCurrency(totalInvestment)}</p>
                             </div>
-                            <div class="bg-green-50 p-3 rounded">
+                            <div class="bg-green-50 p-3 rounded-lg transform hover:scale-105 transition-all duration-200">
                                 <p class="text-sm text-green-600">Total Return</p>
                                 <p class="font-bold text-green-900">${formatCurrency(totalReturn)}</p>
                             </div>
-                            <div class="${profit >= 0 ? 'bg-emerald-50' : 'bg-red-50'} p-3 rounded">
+                            <div class="${profit >= 0 ? 'bg-emerald-50' : 'bg-red-50'} p-3 rounded-lg transform hover:scale-105 transition-all duration-200">
                                 <p class="text-sm ${profit >= 0 ? 'text-emerald-600' : 'text-red-600'}">${profit >= 0 ? 'Profit' : 'Loss'}</p>
                                 <p class="font-bold ${profit >= 0 ? 'text-emerald-900' : 'text-red-900'}">${formatCurrency(Math.abs(profit))}</p>
                             </div>
                         </div>
                         
                         <h3 class="font-semibold text-lg">Individual Shares</h3>
-                        ${validParticipants.map(p => `
-                            <div class="border rounded-lg p-4 bg-gray-50">
+                        ${validParticipants.map((p, index) => `
+                            <div class="border rounded-lg p-4 bg-gray-50 transform hover:scale-102 transition-all duration-300" style="animation-delay: ${index * 0.1}s">
                                 <div class="flex justify-between items-center mb-2">
                                     <h4 class="font-medium">${p.name}</h4>
                                     <span class="bg-gray-200 px-2 py-1 rounded text-sm">${p.percentage.toFixed(2)}%</span>
@@ -269,7 +572,7 @@
                                 </div>
                                 <div class="mt-2">
                                     <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${p.percentage}%"></div>
+                                        <div class="${isDarkMode ? 'progress-bar-dark' : 'bg-blue-600'} h-2 rounded-full" style="width: ${p.percentage}%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -286,6 +589,7 @@
             renderParticipants();
             renderResults();
             lucide.createIcons();
+            loadThemePreference();
         });
     </script>
 </body>
