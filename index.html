@@ -152,7 +152,7 @@
                         <input type="text" placeholder="Name" value="${participant.name}" 
                                onchange="updateParticipant('${participant.id}', 'name', this.value)"
                                class="px-3 py-2 border rounded">
-                        <input type="text" placeholder="Investment (₹)" value="${participant.investment}" 
+                        <input type="text" placeholder="Investment (₹)" value="${participant.investment > 0 ? participant.investment : ''}" 
                                onchange="updateParticipant('${participant.id}', 'investment', this.value)"
                                oninput="formatNumber(this)"
                                class="px-3 py-2 border rounded">
