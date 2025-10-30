@@ -164,6 +164,12 @@
             color: #ff5252 !important;
         }
         
+        .dark-mode .percentage-badge {
+            background-color: #9ca3af !important;
+            color: #000000 !important;
+            border: 1px solid #6b7280 !important;
+        }
+        
         /* Dark mode toggle button */
         .theme-toggle {
             position: fixed;
@@ -208,6 +214,13 @@
         
         .dark-mode ::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(135deg, #00cccc, #ff00ff);
+        }
+        
+        /* Percentage badge styling */
+        .percentage-badge {
+            background-color: #9ca3af;
+            color: #000000;
+            border: 1px solid #6b7280;
         }
     </style>
 </head>
@@ -552,7 +565,7 @@
                             <div class="border rounded-lg p-4 bg-gray-50 transform hover:scale-102 transition-all duration-300" style="animation-delay: ${index * 0.1}s">
                                 <div class="flex justify-between items-center mb-2">
                                     <h4 class="font-medium">${p.name}</h4>
-                                    <span class="bg-gray-200 px-2 py-1 rounded text-sm">${p.percentage.toFixed(2)}%</span>
+                                    <span class="percentage-badge px-2 py-1 rounded text-sm font-semibold">${p.percentage.toFixed(2)}%</span>
                                 </div>
                                 <div class="grid grid-cols-3 gap-2 text-sm">
                                     <div>
